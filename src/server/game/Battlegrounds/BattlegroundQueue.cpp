@@ -265,6 +265,17 @@ GroupQueueInfo* BattlegroundQueue::AddGroup(Player* leader, Group* grp, Battlegr
                 BgTypeId, leader->GetDebugInfo().c_str(), grp ? grp->GetMembersCount() : 0u);
         }
     }
+    // Ornfelt: Arena:
+    else if (!isRated && ArenaType && !sBattlegroundMgr->isTesting())
+    //else if (!isRated && ArenaType && !sBattlegroundMgr->isTesting() && !leader->GetGroup()) // Don't allow group queue
+    {
+        //TC_LOG_INFO("server.loading", "Queueing wandering bots for arena! BgTypeId: {}", BgTypeId);
+        if (!BotDataMgr::GenerateBattlegroundBots(leader, grp, this, bracketEntry, ginfo))
+        {
+            TC_LOG_WARN("npcbots", "Did NOT generate bots for BG {} for leader {} ({} members)",
+                BgTypeId, leader->GetDebugInfo().c_str(), grp ? grp->GetMembersCount() : 0u);
+        }
+    }
     //end npcbot
 
     return ginfo;

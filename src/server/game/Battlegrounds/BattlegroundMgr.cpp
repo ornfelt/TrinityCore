@@ -352,6 +352,11 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId original
 {
     BattlegroundTypeId bgTypeId = GetRandomBG(originalBgTypeId);
 
+    // Ornfelt: always nagrand skirm
+    if (originalBgTypeId == 6)
+        bgTypeId = BATTLEGROUND_NA;
+    //TC_LOG_INFO("server.loading", "CreateNewBG: %s originalBgTypeId: %s", std::to_string(bgTypeId), std::to_string(originalBgTypeId));
+
     // get the template BG
     Battleground* bg_template = GetBattlegroundTemplate(bgTypeId);
 
