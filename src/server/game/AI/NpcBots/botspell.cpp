@@ -212,7 +212,7 @@ SpellInfo const* GetBotSpellInfoOverride(uint32 spellId)
 SpellInfo const* AssertBotSpellInfoOverride(uint32 spellId)
 {
     decltype(botSpellInfoOverrides)::const_iterator ci = botSpellInfoOverrides.find(spellId);
-    ASSERT(ci != botSpellInfoOverrides.cend(), "AssertBotSpellInfoOverride failed for spell Id %u!", spellId);
+    ASSERT(ci != botSpellInfoOverrides.cend(), "AssertBotSpellInfoOverride failed for spell Id {}!", spellId);
     return &ci->second;
 }
 

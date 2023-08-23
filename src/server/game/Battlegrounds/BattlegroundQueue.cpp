@@ -266,8 +266,7 @@ GroupQueueInfo* BattlegroundQueue::AddGroup(Player* leader, Group* grp, Battlegr
         }
     }
     // Ornfelt: Arena:
-    else if (!isRated && ArenaType && !sBattlegroundMgr->isTesting())
-    //else if (!isRated && ArenaType && !sBattlegroundMgr->isTesting() && !leader->GetGroup()) // Don't allow group queue
+    else if (!isRated && ArenaType && !sBattlegroundMgr->isTesting() && !leader->GetGroup()) // Don't allow group queue
     {
         //TC_LOG_INFO("server.loading", "Queueing wandering bots for arena! BgTypeId: {}", BgTypeId);
         if (!BotDataMgr::GenerateBattlegroundBots(leader, grp, this, bracketEntry, ginfo))

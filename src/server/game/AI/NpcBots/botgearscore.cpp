@@ -91,9 +91,9 @@ void CalculateRawItemScore(ItemTemplate const* proto, float& score)
 
 float CalculateItemGearScore(uint32 botentry, uint8 botlevel, uint8 botclass, uint8 botspec, uint8 slot, ItemTemplate const* proto)
 {
-    ASSERT(slot < BOT_INVENTORY_SIZE, "Invalid bot equip slot %u!", uint32(slot));
+    ASSERT(slot < BOT_INVENTORY_SIZE, "Invalid bot equip slot {}!", uint32(slot));
     EquipmentInfo const* einfo = BotDataMgr::GetBotEquipmentInfo(botentry);
-    ASSERT(einfo, "Trying to CalculateItemGearScore for bot %u with no equip info!", botentry);
+    ASSERT(einfo, "Trying to CalculateItemGearScore for bot {} with no equip info!", botentry);
 
     float itemscore = 0.0f;
 

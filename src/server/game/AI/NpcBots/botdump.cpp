@@ -713,7 +713,7 @@ BotDataDumpResult NPCBotsDump::Write(std::string const& file)
         if (!fout)
             return BOT_DUMP_FAIL_CANT_WRITE_TO_FILE;
 
-        fprintf(fout, "%s", dumpstr.c_str());
+        fprintf(fout, "{}", dumpstr.c_str());
         fclose(fout);
     }
 
@@ -782,7 +782,7 @@ BotDataVerificationResult NPCBotsDump::VerifyWriteData(uint32 entry) const
         return BOT_DATA_INCOMPLETE;
     }
 
-    QueryResult result = WorldDatabase.PQuery("SELECT `guid` FROM `creature` WHERE `id` = %u", entry);
+    QueryResult result = WorldDatabase.PQuery("SELECT `guid` FROM `creature` WHERE `id` = {}", entry);
 
     //creature is not spawned, corrupted
     if (!result)
@@ -860,7 +860,7 @@ void NPCBotsDump::AppendBotNPCBotTransmogData(BotStringTransaction* trans, uint3
     NpcBotData const* botData = BotDataMgr::SelectNpcBotData(entry);
     ASSERT(botData);
 
-    QueryResult tresult = CharacterDatabase.PQuery("SELECT `entry`,`slot`,`item_id`,`fake_id` FROM `characters_npcbot_transmog` WHERE entry = %u", entry);
+    QueryResult tresult = CharacterDatabase.PQuery("SELECT `entry`,`slot`,`item_id`,`fake_id` FROM `characters_npcbot_transmog` WHERE entry = {}", entry);
 
     if (!tresult)
         return;
@@ -979,7 +979,7 @@ void NPCBotsDump::AppendBotEquipsData(BotStringTransaction* trans, uint32 entry)
 
 void NPCBotsDump::AppendBotCreatureData(BotStringTransaction* trans, uint32 entry) const
 {
-    QueryResult cresult = WorldDatabase.PQuery("SELECT `guid`,`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`orientation`,`curhealth`,`curmana` FROM `creature` WHERE id = %u", entry);
+    QueryResult cresult = WorldDatabase.PQuery("SELECT `guid`,`id`,`map`,`spawnMask`,`phaseMask`,`position_x`,`position_y`,`position_z`,`orientation`,`curhealth`,`curmana` FROM `creature` WHERE id = {}", entry);
 
     ASSERT(cresult);
 

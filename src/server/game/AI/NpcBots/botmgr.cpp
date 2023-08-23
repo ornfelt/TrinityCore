@@ -384,7 +384,7 @@ void BotMgr::LoadConfig(bool reload)
     _mult_dmg_levels.clear();
     std::string mult_dps_by_levels = sConfigMgr->GetStringDefault("NpcBot.Mult.Damage.Levels", "1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0");
     std::vector<std::string_view> toks = Trinity::Tokenize(mult_dps_by_levels, ',', false);
-    ASSERT(toks.size() >= BracketsCount, "NpcBot.Mult.Damage.Levels must have at least %u values", uint32(BracketsCount));
+    ASSERT(toks.size() >= BracketsCount, "NpcBot.Mult.Damage.Levels must have at least {} values", uint32(BracketsCount));
     for (decltype(toks)::size_type i = 0; i != toks.size(); ++i)
     {
         Optional<float> val = Trinity::StringTo<float>(toks[i]);
@@ -398,7 +398,7 @@ void BotMgr::LoadConfig(bool reload)
     _botwanderer_pct_level_brackets = {};
     std::string wanderers_by_levels = sConfigMgr->GetStringDefault("NpcBot.WanderingBots.Continents.Levels", "20,15,15,10,10,15,15,0,0");
     std::vector<std::string_view> toks2 = Trinity::Tokenize(wanderers_by_levels, ',', false);
-    ASSERT(toks2.size() >= BracketsCount, "NpcBot.WanderingBots.Continents.Levels must have at least %u values", uint32(BracketsCount));
+    ASSERT(toks2.size() >= BracketsCount, "NpcBot.WanderingBots.Continents.Levels must have at least {} values", uint32(BracketsCount));
     uint32 total_pct = 0;
     for (decltype(toks2)::size_type i = 0; i != toks2.size(); ++i)
     {
@@ -1538,7 +1538,7 @@ BotAddResult BotMgr::AddBot(Creature* bot)
     //    if (count >= map->GetMaxPlayers())
     //    {
     //        ChatHandler ch(_owner->GetSession());
-    //        ch.PSendSysMessage("Instance players limit exceed (%u of %u)", count, map->GetMaxPlayers());
+    //        ch.PSendSysMessage("Instance players limit exceed ({} of {})", count, map->GetMaxPlayers());
     //        return BOT_ADD_INSTANCE_LIMIT;
     //    }
     //}

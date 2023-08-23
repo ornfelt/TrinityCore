@@ -479,7 +479,7 @@ void bot_ai::CheckOwnerExpiry()
     time_t timeNow = time(0);
     time_t expireTime = time_t(BotMgr::GetOwnershipExpireTime());
     uint32 accId = sCharacterCache->GetCharacterAccountIdByGuid(ownerGuid);
-    QueryResult result = accId ? LoginDatabase.PQuery("SELECT UNIX_TIMESTAMP(last_login) FROM account WHERE id = %u", accId) : nullptr;
+    QueryResult result = accId ? LoginDatabase.PQuery("SELECT UNIX_TIMESTAMP(last_login) FROM account WHERE id = {}", accId) : nullptr;
 
     Field* fields = result ? result->Fetch() : nullptr;
     time_t lastLoginTime = fields ? time_t(fields[0].GetUInt32()) : timeNow;
@@ -2086,9 +2086,9 @@ void bot_ai::_listAuras(Player const* player, Unit const* unit) const
             case STAT_SPIRIT: mystat = LocalizedNpcText(player, BOT_TEXT_STAT_SPI); break;
             default: mystat = LocalizedNpcText(player, BOT_TEXT_STAT_UNK); break;
         }
-        //ch.PSendSysMessage("base %s: {}", mystat, unit->GetCreateStat(Stats(i));
+        //ch.PSendSysMessage("base {}: {}", mystat, unit->GetCreateStat(Stats(i));
         float totalstat = unit->GetTotalStatValue(Stats(i));
-        //ch.PSendSysMessage("base total %s: {}", mystat, totalstat);
+        //ch.PSendSysMessage("base total {}: {}", mystat, totalstat);
         if (unit == me)
         {
             BotStatMods t = MAX_BOT_ITEM_MOD;
@@ -2229,10 +2229,10 @@ void bot_ai::_listAuras(Player const* player, Unit const* unit) const
         //for (uint32 i = 0; i != 148; ++i)
         //{
         //    float val = me->GetFloatValue(i);
-        //    ch.PSendSysMessage("Float value at %u: {}", i, val);
+        //    ch.PSendSysMessage("Float value at {}: {}", i, val);
         //}
 
-        //ch.PSendSysMessage("healTargetIconFlags: %u", healTargetIconFlags);
+        //ch.PSendSysMessage("healTargetIconFlags: {}", healTargetIconFlags);
 
         //ch.PSendSysMessage("Roles:");
         //for (uint32 i = BOT_MAX_ROLE; i != BOT_ROLE_NONE; i >>= 1)
@@ -2269,7 +2269,7 @@ void bot_ai::_listAuras(Player const* player, Unit const* unit) const
         //        val += static_cast<BotStat>(_stats[j])[a];
 
         //    if (val != 0)
-        //        ch.PSendSysMessage("Item mod %u: bonus = %i", i, val);
+        //        ch.PSendSysMessage("Item mod {}: bonus = %i", i, val);
         //}
     }
 
@@ -10491,7 +10491,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 {
                     close = false;
                     ChatHandler ch(player->GetSession());
-                    ch.PSendSysMessage("%s's Roles:", me->GetName().c_str());
+                    ch.PSendSysMessage("{}'s Roles:", me->GetName().c_str());
                     for (uint32 i = BOT_MAX_ROLE; i != BOT_ROLE_NONE; i >>= 1)
                     {
                         if (_roleMask & i)
@@ -10520,7 +10520,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                                     ch.SendSysMessage("BOT_ROLE_PARTY");
                                     break;
                                 default:
-                                    ch.PSendSysMessage("BOT_ROLE_%u",i);
+                                    ch.PSendSysMessage("BOT_ROLE_{}",i);
                                     break;
                             }
                         }
@@ -10531,7 +10531,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 {
                     close = false;
                     ChatHandler ch(player->GetSession());
-                    ch.PSendSysMessage("%s's Spells:", me->GetName().c_str());
+                    ch.PSendSysMessage("{}'s Spells:", me->GetName().c_str());
                     uint32 counter = 0;
                     SpellInfo const* spellInfo;
                     BotSpellMap const& myspells = GetSpellMap();
@@ -10548,7 +10548,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                             << ", cd: " << itr->second->cooldown << ", base: " << std::max<uint32>(spellInfo->RecoveryTime, spellInfo->CategoryRecoveryTime);
                         if (itr->second->enabled == false)
                             sstr << " (disabled)";
-                        ch.PSendSysMessage("%u) %s", counter, sstr.str().c_str());
+                        ch.PSendSysMessage("{}) {}", counter, sstr.str().c_str());
                     }
                     break;
                 }
@@ -12278,7 +12278,7 @@ bool bot_ai::_equip(uint8 slot, Item* newItem, ObjectGuid receiver)
     if (newItem->GetState() == ITEM_REMOVED)
     {
         TC_LOG_ERROR("entities.player",
-            "minion_ai::_equip(): player %s (%s) is trying to make bot %s (id: %u) equip item: %s (id: %u, %s) which has state ITEM_REMOVED!",
+            "minion_ai::_equip(): player {} ({}) is trying to make bot {} (id: {}) equip item: {} (id: {}, {}) which has state ITEM_REMOVED!",
             master->GetName(), master->GetGUID().ToString(), me->GetName(), me->GetEntry(), proto->Name1, proto->ItemId, newItem->GetGUID().ToString());
         return false;
     }
@@ -12312,7 +12312,7 @@ bool bot_ai::_equip(uint8 slot, Item* newItem, ObjectGuid receiver)
             //BotWhisper(msg.str().c_str());
 
             TC_LOG_ERROR("entities.player",
-                "minion_ai::_equip(): player %s (%s) is trying to make bot %s (id: %u) equip item: %s (id: %u, %s) but either does not have this item or does not own it",
+                "minion_ai::_equip(): player {} ({}) is trying to make bot {} (id: {}) equip item: {} (id: {}, {}) but either does not have this item or does not own it",
                 master->GetName(), master->GetGUID().ToString(), me->GetName(), me->GetEntry(), proto->Name1, proto->ItemId, newItem->GetGUID().ToString());
             return false;
         }
@@ -17542,9 +17542,9 @@ void bot_ai::CommonTimers(uint32 diff)
                 stuckWpId = _travel_node_cur->GetWPId();
             else {
                 if (stuckWpId == _travel_node_cur->GetWPId()) {
-                    //TC_LOG_ERROR("server.loading", "Bot stuck! Bot %s id %u stuckWpId: %u TELEPORTING to node %u ('%s')",
+                    //TC_LOG_ERROR("server.loading", "Bot stuck! Bot {} id {} stuckWpId: {} TELEPORTING to node {} ('{}')",
                     //    me->GetName().c_str(), me->GetEntry(), stuckWpId, _travel_node_cur->GetWPId(), _travel_node_cur->GetName().c_str());
-                    TC_LOG_ERROR("server.loading", "Bot stuck! Bot %s id %u stuckWpId: %u TELEPORTING to node %u ('%s')",
+                    TC_LOG_ERROR("server.loading", "Bot stuck! Bot {} id {} stuckWpId: {} TELEPORTING to node {} ('{}')",
                         me->GetName().c_str(), me->GetEntry(), stuckWpId, _travel_node_cur->GetWPId(), _travel_node_cur->GetName().c_str());
                     stuckWpId = _travel_node_cur->GetWPId();
                     me->CastSpell(me, WANDERER_HEARTHSTONE);
@@ -17685,12 +17685,10 @@ void bot_ai::Evade()
         {
             if ((curr_zone == 3522 && me->GetPositionZ() > 290))
             {
-                TC_LOG_ERROR("npcbots", "Bot has invalid height in Blade's Edge! Bot %s id %u class %u level %u map %u TELEPORTING to node %u ('%s') map %u, %s, dist %.1f yd!",
-                //TC_LOG_ERROR("npcbots", "Bot has invalid height in Blade's Edge! Bot {} id {} class {} level {} map {} TELEPORTING to node {} ('{}') map {}, {}, dist {} yd!",
+                TC_LOG_ERROR("npcbots", "Bot has invalid height in Blade's Edge! Bot {} id {} class {} level {} map {} TELEPORTING to node {} ('{}') map {}, {}, dist {} yd!",
                     me->GetName().c_str(), me->GetEntry(), uint32(_botclass), uint32(me->GetLevel()), me->GetMapId(), _travel_node_cur->GetWPId(),
                     _travel_node_cur->GetName().c_str(), uint32(mapid), pos.ToString().c_str(), me->GetExactDist(pos));
-                TC_LOG_INFO("npcbots", "BOT POS: %f %f %f", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
-                //TC_LOG_INFO("npcbots", "BOT POS: {} {} {}", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
+                TC_LOG_INFO("npcbots", "BOT POS: {} {} {}", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
             }
             else
             {
@@ -17775,9 +17773,9 @@ void bot_ai::Evade()
                 //outfile.close();
                 // Write to DB
                 if (me->GetMap()->GetEntry()->IsContinent())
-                    //CharacterDatabase.DirectPExecute("UPDATE characters_playermap SET account=%u,name=\"%s\",class=%u,race=%u,level=%u,gender=%u,position_x=%f,position_y=%f,map=%u,zone=%u,extra_flags=64,online=1,taximask='',innTriggerId=1 where guid = %u",
+                    //CharacterDatabase.DirectPExecute("UPDATE characters_playermap SET account={},name=\"{}\",class={},race={},level={},gender={},position_x={},position_y={},map={},zone={},extra_flags=64,online=1,taximask='',innTriggerId=1 where guid = {}",
                     //        1,me->GetName(),me->GetClass(),me->GetRace(),me->GetLevel(),me->GetGender(),me->GetPositionX(),me->GetPositionY(),me->GetMapId(),me->GetZoneId(),me->GetEntry());
-                    CharacterDatabase.DirectPExecute("UPDATE characters_playermap SET level=%u,gender=%u,position_x=%f,position_y=%f,map=%u,zone=%u where guid = %u",
+                    CharacterDatabase.DirectPExecute("UPDATE characters_playermap SET level={},gender={},position_x={},position_y={},map={},zone={} where guid = {}",
                             me->GetLevel(),me->GetGender(),me->GetPositionX(),me->GetPositionY(),me->GetMapId(),me->GetZoneId(),me->GetEntry());
 
                 if (!nextNode)
@@ -17956,7 +17954,7 @@ void bot_ai::TeleportHome(bool reset)
     GetHomePosition(mapid, &pos);
 
     Map* map = sMapMgr->CreateBaseMap(mapid);
-    ASSERT(!map->Instanceable(), "%s", map->GetDebugInfo().c_str());
+    ASSERT(!map->Instanceable(), "{}", map->GetDebugInfo().c_str());
     BotMgr::TeleportBot(me, map, &pos, false, reset);
 
     spawned = false;
@@ -17986,7 +17984,7 @@ bool bot_ai::FinishTeleport(bool reset)
         if (!map || !master->IsAlive() || master->GetBotMgr()->RestrictBots(me, true))
         {
             //ChatHandler ch(master->GetSession());
-            //ch.PSendSysMessage("Your bot %s cannot teleport to you. Restricted bot access on this map...", me->GetName().c_str());
+            //ch.PSendSysMessage("Your bot {} cannot teleport to you. Restricted bot access on this map...", me->GetName().c_str());
             teleFinishEvent = new TeleportFinishEvent(this, reset);
             Events.AddEvent(teleFinishEvent, Events.CalculateTime(std::chrono::seconds(5)));
             return;
@@ -18470,7 +18468,7 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
 void bot_ai::OnWanderNodeReached()
 {
     ASSERT(me->IsInWorld());
-    ASSERT(_travel_node_cur != nullptr, "%s", me->GetGUID().ToString().c_str());
+    ASSERT(_travel_node_cur != nullptr, "{}", me->GetGUID().ToString().c_str());
 
     if (Battleground* bg = GetBG())
     {
