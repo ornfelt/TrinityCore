@@ -2137,7 +2137,7 @@ void bot_ai::_listAuras(Player const* player, Unit const* unit) const
             << " (" << float(((unit->GetFloatValue(UNIT_FIELD_MINOFFHANDDAMAGE) + unit->GetFloatValue(UNIT_FIELD_MAXOFFHANDDAMAGE)) / 2) / attSpeed) << " " << LocalizedNpcText(player, BOT_TEXT_DPS) << ")";
     }
     if (unit != me ||
-        (me->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + BOT_SLOT_RANGED) &&
+        (me->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + uint32(BOT_SLOT_RANGED)) &&
         _botclass != BOT_CLASS_PALADIN &&
         _botclass != BOT_CLASS_DEATH_KNIGHT &&
         _botclass != BOT_CLASS_DRUID &&
@@ -4293,7 +4293,7 @@ std::tuple<Unit*, Unit*> bot_ai::_getTargets(bool byspell, bool ranged, bool &re
     }
 
     bool canAttack = mytar && CanBotAttack(mytar, byspell);
-    if (mytar && (!IAmFree() || me->GetDistance(mytar) < BOT_MAX_CHASE_RANGE) && canAttack &&/* !InDuel(mytar) &&*/
+    if (mytar && (!IAmFree() || me->GetDistance(mytar) < float(BOT_MAX_CHASE_RANGE)) && canAttack &&/* !InDuel(mytar) &&*/
         !(mytar->GetVictim() != nullptr && IsTank() && IsTank(mytar->GetVictim())))
     {
         //TC_LOG_ERROR("entities.player", "bot {} continues attack its target {}", me->GetName(), mytar->GetName());
@@ -5879,7 +5879,7 @@ void bot_ai::Regenerate()
             else
                 addvalue = me->GetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER);
 
-            addvalue *= sWorld->getRate(RATE_POWER_MANA) * REGEN_CD * 0.001f; //regenTimer threshold / 1000
+            addvalue *= sWorld->getRate(RATE_POWER_MANA) * float(REGEN_CD) * 0.001f; //regenTimer threshold / 1000
 
             if (addvalue < 0.0f)
                 addvalue = 0.0f;
@@ -6866,23 +6866,23 @@ void bot_ai::_OnManaUpdate() const
     float pct = fullmana ? 100.f : (float(me->GetPower(POWER_MANA)) * 100.f) / float(me->GetMaxPower(POWER_MANA));
     float m_basemana = _classinfo->basemana;
     if (_botclass == BOT_CLASS_BM)
-        m_basemana = BASE_MANA_1_BM + (BASE_MANA_10_BM - BASE_MANA_1_BM) * (mylevel/81.f);
+        m_basemana = float(BASE_MANA_1_BM) + float(BASE_MANA_10_BM - BASE_MANA_1_BM) * (mylevel / 81.f);
     if (_botclass == BOT_CLASS_SPHYNX)
         m_basemana = BASE_MANA_SPHYNX;
     if (_botclass == BOT_CLASS_ARCHMAGE)
-        m_basemana = BASE_MANA_1_ARCHMAGE + (BASE_MANA_10_ARCHMAGE - BASE_MANA_1_ARCHMAGE) * ((mylevel - 20)/81.f);
+        m_basemana = float(BASE_MANA_1_ARCHMAGE) + float(BASE_MANA_10_ARCHMAGE - BASE_MANA_1_ARCHMAGE) * ((mylevel - 20)/81.f);
     if (_botclass == BOT_CLASS_DREADLORD)
-        m_basemana = BASE_MANA_1_DREADLORD + (BASE_MANA_10_DREADLORD - BASE_MANA_1_DREADLORD) * ((mylevel - 60)/83.f);
+        m_basemana = float(BASE_MANA_1_DREADLORD) + float(BASE_MANA_10_DREADLORD - BASE_MANA_1_DREADLORD) * ((mylevel - 60) / 83.f);
     if (_botclass == BOT_CLASS_SPELLBREAKER)
         m_basemana = BASE_MANA_SPELLBREAKER;
     if (_botclass == BOT_CLASS_DARK_RANGER)
-        m_basemana = BASE_MANA_1_DARK_RANGER + (BASE_MANA_10_DARK_RANGER - BASE_MANA_1_DARK_RANGER) * ((mylevel - 40)/82.f);
+        m_basemana = float(BASE_MANA_1_DARK_RANGER) + float(BASE_MANA_10_DARK_RANGER - BASE_MANA_1_DARK_RANGER) * ((mylevel - 40) / 82.f);
     if (_botclass == BOT_CLASS_NECROMANCER)
         m_basemana = BASE_MANA_NECROMANCER;
     if (_botclass == BOT_CLASS_SEA_WITCH)
-        m_basemana = BASE_MANA_1_SEA_WITCH + (BASE_MANA_10_SEA_WITCH - BASE_MANA_1_SEA_WITCH) * (mylevel/83.f);
+        m_basemana = float(BASE_MANA_1_SEA_WITCH) + float(BASE_MANA_10_SEA_WITCH - BASE_MANA_1_SEA_WITCH) * (mylevel / 83.f);
     if (_botclass == BOT_CLASS_CRYPT_LORD)
-        m_basemana = BASE_MANA_1_CRYPT_LORD + (BASE_MANA_10_CRYPT_LORD - BASE_MANA_1_CRYPT_LORD) * (mylevel/83.f);
+        m_basemana = float(BASE_MANA_1_CRYPT_LORD) + float(BASE_MANA_10_CRYPT_LORD - BASE_MANA_1_CRYPT_LORD) * (mylevel / 83.f);
     //TC_LOG_ERROR("entities.player", "classinfo base mana = {}", m_basemana);
 
     me->SetCreateMana(uint32(m_basemana));
@@ -8460,7 +8460,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
         {
             if (Aura* trans = me->AddAura(MODEL_TRANSITION, me))
             {
-                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + BOT_SLOT_OFFHAND, 0); //debug: remove offhand visuals
+                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + uint32(BOT_SLOT_OFFHAND), 0); //debug: remove offhand visuals
                 trans->SetDuration(500);
                 trans->SetMaxDuration(500);
             }
@@ -17121,7 +17121,7 @@ bool bot_ai::GlobalUpdate(uint32 diff)
             me->SetFloatValue(UNIT_FIELD_COMBATREACH,  DEFAULT_PLAYER_COMBAT_REACH * me->GetObjectScale());
 
             //debug: restore offhand visual if needed
-            if (me->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + BOT_SLOT_OFFHAND) == 0 && _canUseOffHand())
+            if (me->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + uint32(BOT_SLOT_OFFHAND)) == 0 && _canUseOffHand())
             {
                 EquipmentInfo const* einfo = BotDataMgr::GetBotEquipmentInfo(me->GetEntry());
                 if (CanChangeEquip(BOT_SLOT_OFFHAND) && _equips[BOT_SLOT_OFFHAND])
@@ -17129,13 +17129,13 @@ bool bot_ai::GlobalUpdate(uint32 diff)
                     NpcBotTransmogData const* transmogData = BotDataMgr::SelectNpcBotTransmogs(me->GetEntry());
                     if (einfo->ItemEntry[BOT_SLOT_OFFHAND] != _equips[BOT_SLOT_OFFHAND]->GetEntry() &&
                         transmogData && BotMgr::IsTransmogEnabled() && (transmogData->transmogs[BOT_SLOT_OFFHAND].first == _equips[BOT_SLOT_OFFHAND]->GetEntry() || BotMgr::TransmogUseEquipmentSlots()))
-                        me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + BOT_SLOT_OFFHAND, uint32(std::max<int32>(transmogData->transmogs[BOT_SLOT_OFFHAND].second, 0)));
+                        me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + uint32(BOT_SLOT_OFFHAND), uint32(std::max<int32>(transmogData->transmogs[BOT_SLOT_OFFHAND].second, 0)));
                     else
-                        me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + BOT_SLOT_OFFHAND, _equips[BOT_SLOT_OFFHAND]->GetEntry());
+                        me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + uint32(BOT_SLOT_OFFHAND), _equips[BOT_SLOT_OFFHAND]->GetEntry());
                 }
                 else
                 {
-                    me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + BOT_SLOT_OFFHAND, einfo->ItemEntry[BOT_SLOT_OFFHAND]);
+                    me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + uint32(BOT_SLOT_OFFHAND), einfo->ItemEntry[BOT_SLOT_OFFHAND]);
                 }
             }
         }

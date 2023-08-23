@@ -474,7 +474,7 @@ void BotMgr::ResolveConfigConflicts()
     if (uint8 interFlags = (_noDpsTargetIconFlags & dpsFlags))
     {
         _noDpsTargetIconFlags &= ~interFlags;
-        TC_LOG_ERROR("server.loading", "BotMgr::LoadConfig: NoDPSTargetIconMask intersects with dps targets flags 0x{}2X! Removed, new mask: 0x{}2X",
+        TC_LOG_ERROR("server.loading", "BotMgr::LoadConfig: NoDPSTargetIconMask intersects with dps targets flags {:#X}! Removed, new mask: {:#X}",
             uint32(interFlags), uint32(_noDpsTargetIconFlags));
     }
 
@@ -494,8 +494,8 @@ void BotMgr::ResolveConfigConflicts()
                 uint32 pct = _botwanderer_pct_level_brackets[j];
                 _botwanderer_pct_level_brackets[minbotlevel / 10] += pct;
                 _botwanderer_pct_level_brackets[j] = 0;
-                //TC_LOG_WARN("server.loading", "NpcBot.WanderingBots.Continents.Levels conflicts with NpcBot.WanderingBots.Continents.Maps: no map for levels {}-{}! Transferring extra {}{} to levels {}-{}",
-                //    uint32(j ? j * 10 : 1), uint32(j * 10 + 9), pct, std::max<uint32>(minbotlevel / 10 * 10, 1), uint32(minbotlevel / 10 * 10 + 9));
+                TC_LOG_WARN("server.loading", "NpcBot.WanderingBots.Continents.Levels conflicts with NpcBot.WanderingBots.Continents.Maps: no map for levels {}-{}! Transferring extra {}% to levels {}-{}",
+                    uint32(j ? j * 10 : 1), uint32(j * 10 + 9), pct, std::max<uint32>(minbotlevel / 10 * 10, 1), uint32(minbotlevel / 10 * 10 + 9));
             }
         }
         for (uint8 i = maxbotlevel / 10 + 1; i < _botwanderer_pct_level_brackets.size(); ++i)
@@ -505,8 +505,8 @@ void BotMgr::ResolveConfigConflicts()
                 uint32 pct = _botwanderer_pct_level_brackets[i];
                 _botwanderer_pct_level_brackets[maxbotlevel / 10] += pct;
                 _botwanderer_pct_level_brackets[i] = 0;
-                //TC_LOG_WARN("server.loading", "NpcBot.WanderingBots.Continents.Levels conflicts with NpcBot.WanderingBots.Continents.Maps: no map for levels {}-{}! Transferring extra {}{} to levels {}-{}",
-                //    uint32(i ? i * 10 : 1), uint32(i * 10 + 9), pct, std::max<uint32>(maxbotlevel, 1), uint32(maxbotlevel + 9));
+                TC_LOG_WARN("server.loading", "NpcBot.WanderingBots.Continents.Levels conflicts with NpcBot.WanderingBots.Continents.Maps: no map for levels {}-{}! Transferring extra {}% to levels {}-{}",
+                    uint32(i ? i * 10 : 1), uint32(i * 10 + 9), pct, std::max<uint32>(maxbotlevel, 1), uint32(maxbotlevel + 9));
             }
         }
     }
