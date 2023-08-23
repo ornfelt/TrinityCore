@@ -158,7 +158,7 @@ void SpawnWandererBot(uint32 bot_id, WanderNode const* spawnLoc, NpcBotRegistry*
         bot_template.Name, bot_id, uint32(bot_extras->bclass), uint32(bot_extras->race), bot_data->faction,
         spawnLoc->GetMapId(), spawnLoc->ToString(), spawnLoc->GetName());
 
-    // HEHE: Write position to file. Requires:
+    // Ornfelt: Write position to file. Requires:
     //#include <fstream>
     //std::ofstream outfile;
     //outfile.open("./wander_nodes_data/wander_nodes_all.txt", std::ios_base::app); // Append instead of overwrite

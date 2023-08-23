@@ -17530,7 +17530,7 @@ void bot_ai::CommonTimers(uint32 diff)
     if (IAmFree())
         UpdateReviveTimer(diff);
 
-    // HEHE: stucktimer
+    // Ornfelt: stucktimer
     if (IsWanderer()) {
         if (!stuckWpId)
             stuckWpId = 0;
@@ -17762,7 +17762,7 @@ void bot_ai::Evade()
 
                 WanderNode const* nextNode = GetNextTravelNode(&pos, false);
 
-                // HEHE: Write position to file. Requires:
+                // Ornfelt: Write position to file. Requires:
                 //#include <fstream>
                 //std::ofstream outfile;
                 //std::string wander_nodes_file = "./wander_nodes_data/" + std::to_string(me->GetEntry()) + "_pos.txt";
