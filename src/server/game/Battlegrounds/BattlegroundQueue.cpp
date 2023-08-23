@@ -257,6 +257,7 @@ GroupQueueInfo* BattlegroundQueue::AddGroup(Player* leader, Group* grp, Battlegr
 
     //npcbot: try to queue wandering bots
     if (!isRated && !ArenaType && !arenateamid && !sBattlegroundMgr->isTesting())
+    //if (!isRated && !ArenaType && !arenateamid && !sBattlegroundMgr->isTesting() && !leader->GetGroup()) // Don't allow group queue
     {
         if (!BotDataMgr::GenerateBattlegroundBots(leader, grp, this, bracketEntry, ginfo))
         {
@@ -301,7 +302,7 @@ GroupQueueInfo* BattlegroundQueue::AddBotAsGroup(ObjectGuid guid, uint32 team, B
     if (ginfo->Team == HORDE)
         index++;
 
-    TC_LOG_DEBUG("npcbots", "Adding NPCBot {} to BattlegroundQueue bgTypeId : {}, bracket_id : {}, index : {}", guid.GetEntry(), BgTypeId, bracketId, index);
+    //TC_LOG_DEBUG("npcbots", "Adding NPCBot {} to BattlegroundQueue bgTypeId : {}, bracket_id : {}, index : {}", guid.GetEntry(), BgTypeId, bracketId, index);
 
     uint32 lastOnlineTime = GameTime::GetGameTimeMS();
 

@@ -567,6 +567,9 @@ void bot_ai::ResetBotAI(uint8 resetType)
     _botCommandState = 0;
     _botAwaitState = BOT_AWAIT_NONE;
     _reviveTimer = 0;
+    // Ornfelt: stuckTimer
+    _stuckTimer = urand(3600000, 3800000); // Reset to ~1 Hour
+    stuckWpId = 0;
 
     master = reinterpret_cast<Player*>(me);
     if (resetType & BOTAI_RESET_MASK_ABANDON_MASTER)
@@ -3655,6 +3658,10 @@ bool bot_ai::CanBotAttack(Unit const* target, int8 byspell, bool secondary) cons
             case 4952: case 17578: case 24792: case 30527: case 31143: case 31144: case 31146: // training dummy
             case 32541: case 32542: case 32543: case 32545: case 32546: case 32547: case 32666: case 32667: // training dummy
             case 7668: case 7669: case 7670: case 7671: // Blasted Lands servants
+            case 21419: case 21736: case 21749: // Infernal attacker, Wildhammer defender, Shadowmoon scout
+            case 20290: case 26582: case 26583: // Lagoon eel, Horrified Drakkari trolls
+            case 25748: case 25817: case 27290: // Oil-covered hawk, Oiled fledgeling, Hungering dead
+            case 29618: case 24747: case 23693: // Snowblind follower, Fjord hawk, Duskwing eagle
                 return false;
             case 21416: case 21709: case 21710: case 21711: // Shadowmoon Valley Broken element corruptors
                 if (target->HasAuraTypeWithMiscvalue(SPELL_AURA_SCHOOL_IMMUNITY, 127))
@@ -17523,6 +17530,28 @@ void bot_ai::CommonTimers(uint32 diff)
     if (IAmFree())
         UpdateReviveTimer(diff);
 
+    // HEHE: stucktimer
+    if (IsWanderer()) {
+        if (!stuckWpId)
+            stuckWpId = 0;
+        if (_stuckTimer > diff)        _stuckTimer -= diff;
+        else {
+            if (stuckWpId == 0 && _travel_node_cur->GetWPId())
+                stuckWpId = _travel_node_cur->GetWPId();
+            else {
+                if (stuckWpId == _travel_node_cur->GetWPId()) {
+                    //TC_LOG_ERROR("server.loading", "Bot stuck! Bot %s id %u stuckWpId: %u TELEPORTING to node %u ('%s')",
+                    //    me->GetName().c_str(), me->GetEntry(), stuckWpId, _travel_node_cur->GetWPId(), _travel_node_cur->GetName().c_str());
+                    TC_LOG_ERROR("server.loading", "Bot stuck! Bot %s id %u stuckWpId: %u TELEPORTING to node %u ('%s')",
+                        me->GetName().c_str(), me->GetEntry(), stuckWpId, _travel_node_cur->GetWPId(), _travel_node_cur->GetName().c_str());
+                    stuckWpId = _travel_node_cur->GetWPId();
+                    me->CastSpell(me, WANDERER_HEARTHSTONE);
+                }
+            }
+            _stuckTimer = urand(7200000, 7400000); // Reset to ~2 hours
+        }
+    }
+
     if (me->IsInWorld())
     {
         if (_wmoAreaUpdateTimer > diff) _wmoAreaUpdateTimer -= diff;
@@ -17642,12 +17671,29 @@ void bot_ai::Evade()
 
     if (IsWanderer())
     {
+        // Ornfelt: fix blade's edge
+        uint32 curr_zone, curr_area;
+        me->GetZoneAndAreaId(curr_zone, curr_area);
         if (mapid != me->GetMap()->GetId() || _evadeCount >= 50 || me->GetExactDist2d(pos) > MAX_WANDER_NODE_DISTANCE ||
-            me->GetPositionZ() <= INVALID_HEIGHT || (me->GetExactDist2d(pos) < 20.0f && me->GetExactDist(pos) > 100.0f))
+            me->GetPositionZ() <= INVALID_HEIGHT || (me->GetExactDist2d(pos) < 20.0f && me->GetExactDist(pos) > 100.0f)
+            // Ornfelt: fix blade's edge
+            || (curr_zone == 3522 && me->GetPositionZ() > 290))
         {
-            TC_LOG_DEBUG("npcbots", "Bot {} id {} class {} level {} map {} TELEPORTING to node {} ('{}') map {}, {}, dist {} yd!",
-                me->GetName(), me->GetEntry(), uint32(_botclass), uint32(me->GetLevel()), me->GetMapId(), _travel_node_cur->GetWPId(),
-                _travel_node_cur->GetName(), uint32(mapid), pos.ToString(), me->GetExactDist(pos));
+            if ((curr_zone == 3522 && me->GetPositionZ() > 290))
+            {
+                TC_LOG_ERROR("npcbots", "Bot has invalid height in Blade's Edge! Bot %s id %u class %u level %u map %u TELEPORTING to node %u ('%s') map %u, %s, dist %.1f yd!",
+                //TC_LOG_ERROR("npcbots", "Bot has invalid height in Blade's Edge! Bot {} id {} class {} level {} map {} TELEPORTING to node {} ('{}') map {}, {}, dist {} yd!",
+                    me->GetName().c_str(), me->GetEntry(), uint32(_botclass), uint32(me->GetLevel()), me->GetMapId(), _travel_node_cur->GetWPId(),
+                    _travel_node_cur->GetName().c_str(), uint32(mapid), pos.ToString().c_str(), me->GetExactDist(pos));
+                TC_LOG_INFO("npcbots", "BOT POS: %f %f %f", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
+                //TC_LOG_INFO("npcbots", "BOT POS: {} {} {}", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
+            }
+            else
+            {
+                TC_LOG_DEBUG("npcbots", "Bot {} id {} class {} level {} map {} TELEPORTING to node {} ('{}') map {}, {}, dist {} yd!",
+                    me->GetName(), me->GetEntry(), uint32(_botclass), uint32(me->GetLevel()), me->GetMapId(), _travel_node_cur->GetWPId(),
+                    _travel_node_cur->GetName(), uint32(mapid), pos.ToString(), me->GetExactDist(pos));
+            }
 
             evadeDelayTimer = 12000;
             me->CastSpell(me, WANDERER_HEARTHSTONE);
@@ -17715,6 +17761,21 @@ void bot_ai::Evade()
                 OnWanderNodeReached();
 
                 WanderNode const* nextNode = GetNextTravelNode(&pos, false);
+
+                // HEHE: Write position to file. Requires:
+                //#include <fstream>
+                //std::ofstream outfile;
+                //std::string wander_nodes_file = "./wander_nodes_data/" + std::to_string(me->GetEntry()) + "_pos.txt";
+                //outfile.open(wander_nodes_file); // Overwrite
+                //outfile << "WanderNodeReached! Bot: " + std::to_string(me->GetEntry()) + ", WP: " + std::to_string(_travel_node_cur->GetWPId()) + ", pos: " + me->GetPosition().ToString() + ", zone: " + std::to_string(me->GetZoneId()) + ", map: " + std::to_string(me->GetMapId()) + ", level: " + std::to_string(me->GetLevel()) + ", name: " + me->GetName() + ", class: " + std::to_string(me->GetClass()) + + ", race: " + std::to_string(me->GetRace()) + ", gender: " + std::to_string(me->GetGender()) + "\n";
+                //outfile.close();
+                // Write to DB
+                if (me->GetMap()->GetEntry()->IsContinent())
+                    //CharacterDatabase.DirectPExecute("UPDATE characters_playermap SET account=%u,name=\"%s\",class=%u,race=%u,level=%u,gender=%u,position_x=%f,position_y=%f,map=%u,zone=%u,extra_flags=64,online=1,taximask='',innTriggerId=1 where guid = %u",
+                    //        1,me->GetName(),me->GetClass(),me->GetRace(),me->GetLevel(),me->GetGender(),me->GetPositionX(),me->GetPositionY(),me->GetMapId(),me->GetZoneId(),me->GetEntry());
+                    CharacterDatabase.DirectPExecute("UPDATE characters_playermap SET level=%u,gender=%u,position_x=%f,position_y=%f,map=%u,zone=%u where guid = %u",
+                            me->GetLevel(),me->GetGender(),me->GetPositionX(),me->GetPositionY(),me->GetMapId(),me->GetZoneId(),me->GetEntry());
+
                 if (!nextNode)
                 {
                     TC_LOG_FATAL("npcbots", "Bot {} ({}) is unable to get next travel node! cur {}, last {}, position: {}. BOT WAS DISABLED",
@@ -17834,10 +17895,11 @@ void bot_ai::GetNextEvadeMovePoint(Position& pos, bool& use_path) const
                 path.ShortenPathUntilDist(path.GetEndPosition(), frand(5.0f, 15.0f));
                 return;
             }
+            // Ornfelt: Remove path log
             //log error and use direct point movement
-            TC_LOG_DEBUG("npcbots", "Bot {} id {} class {} level {} can't find full path to node {} (res {}) from pos {}, falling back to default PF!",
-                me->GetName(), me->GetEntry(), uint32(_botclass), uint32(me->GetLevel()), IsWanderer() ? _travel_node_cur->GetWPId() : 0, uint32(path.GetPathType()),
-                me->GetPosition().ToString());
+            //TC_LOG_DEBUG("npcbots", "Bot {} id {} class {} level {} can't find full path to node {} (res {}) from pos {}, falling back to default PF!",
+            //    me->GetName(), me->GetEntry(), uint32(_botclass), uint32(me->GetLevel()), IsWanderer() ? _travel_node_cur->GetWPId() : 0, uint32(path.GetPathType()),
+            //    me->GetPosition().ToString());
             break;
         default:
             break;

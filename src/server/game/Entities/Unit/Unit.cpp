@@ -1151,6 +1151,23 @@ void Unit::CalculateSpellDamageTaken(SpellNonMeleeDamage* damageInfo, int32 dama
     // Script Hook For CalculateSpellDamageTaken -- Allow scripts to change the Damage post class mitigation calculations
     sScriptMgr->ModifySpellDamageTaken(damageInfo->target, damageInfo->attacker, damage);
 
+    // HEHE: Buff spells
+    // Buff lava burst
+    if (spellInfo->Id == 60043)
+        damage *= 2;
+    // Buff earth shock
+    else if (spellInfo->Id == 49231)
+        damage *= 3;
+    // Buff pyroblast
+    else if (spellInfo->Id == 42891)
+        damage *= 1.4;
+    // Buff CL
+    else if (spellInfo->Id == 49271)
+        damage *= 1.2;
+    // Buff arcane barrage
+    else if (spellInfo->Id == 44425)
+        damage *= 100;
+
     // Calculate absorb resist
     if (damage < 0)
         damage = 0;

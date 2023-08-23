@@ -3174,7 +3174,10 @@ SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const
 
     if (Player* player = m_caster->ToPlayer())
     {
-        if (!player->GetCommandStatus(CHEAT_CASTTIME))
+        // Ornfelt: remove cast time for ghost wolf
+        if (m_spellInfo->Id == 2645)
+            m_casttime = 0;
+        else if (!player->GetCommandStatus(CHEAT_CASTTIME))
         {
             // calculate cast time (calculated after first CheckCast check to prevent charge counting for first CheckCast fail)
             m_casttime = m_spellInfo->CalcCastTime(this);
@@ -6193,7 +6196,9 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 if (unitCaster->GetTypeId() == TYPEID_PLAYER && !allowMount && !m_spellInfo->AreaGroupId)
                     return SPELL_FAILED_NO_MOUNTS_ALLOWED;
 
-                if (unitCaster->IsInDisallowedMountForm())
+                // Ornfelt: this hinders mounting when morphed
+                //if (unitCaster->IsInDisallowedMountForm())
+                if (unitCaster->IsInDisallowedMountForm() && unitCaster->GetDisplayId() != 7550)
                 {
                     SendMountResult(MountResult::Shapeshifted); // mount result gets sent before the cast result
                     return SPELL_FAILED_DONT_REPORT;
