@@ -651,7 +651,7 @@ void BotDataMgr::Update(uint32 diff)
             _botsWanderCreatureEquipmentTemplates.erase(bwcetitr);
             _botsWanderCreatureTemplates.erase(bwctitr);
 
-            TC_LOG_DEBUG("npcbots", "Despawned wanderer bot {} '{}' (orig {})", bot_despawn_id, botName, origEntry);
+            //TC_LOG_DEBUG("npcbots", "Despawned wanderer bot {} '{}' (orig {})", bot_despawn_id, botName, origEntry);
         }
     }
 
@@ -1514,7 +1514,7 @@ bool BotDataMgr::GenerateBattlegroundBots(Player const* groupLeader, [[maybe_unu
             queue->AddBotAsGroup(bot->GetGUID(), GetTeamIdForFaction(bot->GetFaction()) == TEAM_HORDE ? HORDE : ALLIANCE,
                 bgTypeId, bracketEntry, atype, false, gqinfo->ArenaTeamRating, ammr);
 
-            // HEHE: Fix bots in arena queueing slowly...
+            // Ornfelt: Fix bots in arena queueing slowly...
             if (bgTypeId == 6)
                 seconds_delay += std::max<uint32>(1u, uint32((MINUTE / 4) / std::min<uint32>(needed_bots_count_a, needed_bots_count_h)));
             else

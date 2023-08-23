@@ -1167,6 +1167,12 @@ void Unit::CalculateSpellDamageTaken(SpellNonMeleeDamage* damageInfo, int32 dama
     // Buff arcane barrage
     else if (spellInfo->Id == 44425)
         damage *= 100;
+    // Buff frostfire bolt
+    else if (spellInfo->Id == 47610)
+        damage *= 1.3;
+    // Buff frostbolt
+    else if (spellInfo->Id == 42842)
+        damage *= 1.2;
 
     // Calculate absorb resist
     if (damage < 0)
