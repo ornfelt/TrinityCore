@@ -15361,7 +15361,8 @@ void bot_ai::JustDied(Unit* u)
 
     if (IsWanderer() && me->GetMap()->IsBattlegroundOrArena())
     {
-        if (Battleground const* bg = GetBG())
+        //if (Battleground const* bg = GetBG())
+        if (Battleground* bg = GetBG())
         {
             TeamId my_team = BotDataMgr::GetTeamIdForFaction(me->GetFaction());
             if (WorldSafeLocsEntry const* gy = bg->GetClosestGraveyardForBot(*me, my_team == TEAM_HORDE ? HORDE : ALLIANCE))
@@ -15369,6 +15370,9 @@ void bot_ai::JustDied(Unit* u)
                 Position pos(gy->Loc.X, gy->Loc.Y, gy->Loc.Z, me->GetOrientation());
                 Events.AddEventAtOffset([me = me, pos = pos]() { BotMgr::TeleportBot(me, me->GetMap(), &pos, true); }, 5s);
             }
+            // Ornfelt: check win condition (seems to be required if bot gets killed by unit other than bot / player)
+            if (bg->isArena())
+                bg->CheckWinConditions();
         }
     }
     else if (u && (u->IsPvP() || u->IsControlledByPlayer() || u->IsNPCBotOrPet()))
