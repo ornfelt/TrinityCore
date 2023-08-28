@@ -713,7 +713,7 @@ BotDataDumpResult NPCBotsDump::Write(std::string const& file)
         if (!fout)
             return BOT_DUMP_FAIL_CANT_WRITE_TO_FILE;
 
-        fprintf(fout, "{}", dumpstr.c_str());
+        fprintf(fout, "%s", dumpstr.c_str());
         fclose(fout);
     }
 

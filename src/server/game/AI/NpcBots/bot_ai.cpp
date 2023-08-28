@@ -2086,9 +2086,9 @@ void bot_ai::_listAuras(Player const* player, Unit const* unit) const
             case STAT_SPIRIT: mystat = LocalizedNpcText(player, BOT_TEXT_STAT_SPI); break;
             default: mystat = LocalizedNpcText(player, BOT_TEXT_STAT_UNK); break;
         }
-        //ch.PSendSysMessage("base {}: {}", mystat, unit->GetCreateStat(Stats(i));
+        //ch.PSendSysMessage("base %s: {}", mystat, unit->GetCreateStat(Stats(i));
         float totalstat = unit->GetTotalStatValue(Stats(i));
-        //ch.PSendSysMessage("base total {}: {}", mystat, totalstat);
+        //ch.PSendSysMessage("base total %s: {}", mystat, totalstat);
         if (unit == me)
         {
             BotStatMods t = MAX_BOT_ITEM_MOD;
@@ -2229,10 +2229,10 @@ void bot_ai::_listAuras(Player const* player, Unit const* unit) const
         //for (uint32 i = 0; i != 148; ++i)
         //{
         //    float val = me->GetFloatValue(i);
-        //    ch.PSendSysMessage("Float value at {}: {}", i, val);
+        //    ch.PSendSysMessage("Float value at %u: {}", i, val);
         //}
 
-        //ch.PSendSysMessage("healTargetIconFlags: {}", healTargetIconFlags);
+        //ch.PSendSysMessage("healTargetIconFlags: %u", healTargetIconFlags);
 
         //ch.PSendSysMessage("Roles:");
         //for (uint32 i = BOT_MAX_ROLE; i != BOT_ROLE_NONE; i >>= 1)
@@ -2269,7 +2269,7 @@ void bot_ai::_listAuras(Player const* player, Unit const* unit) const
         //        val += static_cast<BotStat>(_stats[j])[a];
 
         //    if (val != 0)
-        //        ch.PSendSysMessage("Item mod {}: bonus = %i", i, val);
+        //        ch.PSendSysMessage("Item mod %u: bonus = %i", i, val);
         //}
     }
 
@@ -10491,7 +10491,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 {
                     close = false;
                     ChatHandler ch(player->GetSession());
-                    ch.PSendSysMessage("{}'s Roles:", me->GetName().c_str());
+                    ch.PSendSysMessage("%s's Roles:", me->GetName().c_str());
                     for (uint32 i = BOT_MAX_ROLE; i != BOT_ROLE_NONE; i >>= 1)
                     {
                         if (_roleMask & i)
@@ -10520,7 +10520,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                                     ch.SendSysMessage("BOT_ROLE_PARTY");
                                     break;
                                 default:
-                                    ch.PSendSysMessage("BOT_ROLE_{}",i);
+                                    ch.PSendSysMessage("BOT_ROLE_%u",i);
                                     break;
                             }
                         }
@@ -10531,7 +10531,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 {
                     close = false;
                     ChatHandler ch(player->GetSession());
-                    ch.PSendSysMessage("{}'s Spells:", me->GetName().c_str());
+                    ch.PSendSysMessage("%s's Spells:", me->GetName().c_str());
                     uint32 counter = 0;
                     SpellInfo const* spellInfo;
                     BotSpellMap const& myspells = GetSpellMap();
@@ -10548,7 +10548,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                             << ", cd: " << itr->second->cooldown << ", base: " << std::max<uint32>(spellInfo->RecoveryTime, spellInfo->CategoryRecoveryTime);
                         if (itr->second->enabled == false)
                             sstr << " (disabled)";
-                        ch.PSendSysMessage("{}) {}", counter, sstr.str().c_str());
+                        ch.PSendSysMessage("%u) %s", counter, sstr.str().c_str());
                     }
                     break;
                 }
@@ -17546,8 +17546,6 @@ void bot_ai::CommonTimers(uint32 diff)
                 stuckWpId = _travel_node_cur->GetWPId();
             else {
                 if (stuckWpId == _travel_node_cur->GetWPId()) {
-                    //TC_LOG_ERROR("server.loading", "Bot stuck! Bot {} id {} stuckWpId: {} TELEPORTING to node {} ('{}')",
-                    //    me->GetName().c_str(), me->GetEntry(), stuckWpId, _travel_node_cur->GetWPId(), _travel_node_cur->GetName().c_str());
                     TC_LOG_ERROR("server.loading", "Bot stuck! Bot {} id {} stuckWpId: {} TELEPORTING to node {} ('{}')",
                         me->GetName().c_str(), me->GetEntry(), stuckWpId, _travel_node_cur->GetWPId(), _travel_node_cur->GetName().c_str());
                     stuckWpId = _travel_node_cur->GetWPId();
@@ -17988,7 +17986,7 @@ bool bot_ai::FinishTeleport(bool reset)
         if (!map || !master->IsAlive() || master->GetBotMgr()->RestrictBots(me, true))
         {
             //ChatHandler ch(master->GetSession());
-            //ch.PSendSysMessage("Your bot {} cannot teleport to you. Restricted bot access on this map...", me->GetName().c_str());
+            //ch.PSendSysMessage("Your bot %s cannot teleport to you. Restricted bot access on this map...", me->GetName().c_str());
             teleFinishEvent = new TeleportFinishEvent(this, reset);
             Events.AddEvent(teleFinishEvent, Events.CalculateTime(std::chrono::seconds(5)));
             return;
