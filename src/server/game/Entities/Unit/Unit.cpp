@@ -1158,21 +1158,15 @@ void Unit::CalculateSpellDamageTaken(SpellNonMeleeDamage* damageInfo, int32 dama
     // Buff earth shock
     else if (spellInfo->Id == 49231)
         damage *= 3;
-    // Buff pyroblast
-    else if (spellInfo->Id == 42891)
-        damage *= 1.4;
-    // Buff CL
-    else if (spellInfo->Id == 49271)
+    // Buff pyroblast / frostfire bolt
+    else if (spellInfo->Id == 42891 || spellInfo->Id == 47610)
+        damage *= 1.3;
+    // Buff CL / frostbolt
+    else if (spellInfo->Id == 49271 || spellInfo->Id == 42842)
         damage *= 1.2;
     // Buff arcane barrage
     else if (spellInfo->Id == 44425)
         damage *= 100;
-    // Buff frostfire bolt
-    else if (spellInfo->Id == 47610)
-        damage *= 1.3;
-    // Buff frostbolt
-    else if (spellInfo->Id == 42842)
-        damage *= 1.2;
 
     // Calculate absorb resist
     if (damage < 0)
