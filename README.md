@@ -14,6 +14,12 @@
 * [Links](#links)
 
 
+## My custom changes
+
+My custom changes include:
+* Arena skirmish with npcbots. Currently, I've only added Nagrand Arena. You can queue 2v2, 3v3 and 5v5 and the npcbots will automatically join the queue just like in BGs. You need [this](https://github.com/ornfelt/TrinityCore/commit/1b5e874d4b8fbea218a2fc7efec69d24b9afc416) commit and the Nagrand arena wander nodes (my sql can be found [here](https://github.com/ornfelt/TrinityCore/blob/3.3.5/sql/Bots/updates/world/2023_06_09_00_creature_template_npcbot_wander_nodes.sql)) to add arena, and ideally [this](https://github.com/ornfelt/TrinityCore/commit/da88e361ae611a9a8d4e75b1fcaf4f76d7e425a5) one as well.
+
+* Compatability with https://github.com/ornfelt/wander_nodes_util. See [this](https://github.com/ornfelt/TrinityCore/commit/1565a9b2c8222518505997d56af05a962fd6596b#diff-821d8443e5562c441172343cb58672bed4f1275e800e3ea08e9436c5eb2f4e7a) commit for required changes (look for DB execution in bot_ai.cpp and botdatamgr.cpp).
 
 ## Build Status
 
