@@ -10,7 +10,8 @@ build*/
 .DS_Store
 CMakeLists.txt.user
 *.bak
-*.patch
+*.patch #Exclude all patches
+!NPCBots.patch #Except for NPCBots.patch
 *.diff
 *.REMOTE.*
 *.BACKUP.*

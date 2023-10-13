@@ -1152,8 +1152,8 @@ void Unit::CalculateSpellDamageTaken(SpellNonMeleeDamage* damageInfo, int32 dama
     sScriptMgr->ModifySpellDamageTaken(damageInfo->target, damageInfo->attacker, damage);
 
     // Ornfelt: Buff spells
-    // Buff lava burst
-    if (spellInfo->Id == 60043)
+    // Buff lava burst and CoC
+    if (spellInfo->Id == 60043 || spellInfo->Id == 46984)
         damage *= 2;
     // Buff earth shock
     else if (spellInfo->Id == 49231)
